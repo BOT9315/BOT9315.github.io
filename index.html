@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ankush — Developer Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#030303;--fg:#f2eed8;--muted:rgba(242,238,216,.38);--dim:rgba(242,238,216,.12);--border:rgba(242,238,216,.08);--green:#b8ff57;--purple:#9d7fff;--pink:#ff6b9d}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:'Space Mono',monospace;font-size:12px;overflow-x:hidden;cursor:none}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#dot{width:8px;height:8px;background:var(--green);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s;mix-blend-mode:difference}
+#ring{width:40px;height:40px;border:1px solid rgba(184,255,87,.4);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%)}
+#dot.big{width:20px;height:20px}
+nav{position:fixed;top:0;left:0;width:100%;padding:22px 48px;display:flex;justify-content:space-between;align-items:center;z-index:100;transition:all .4s}
+nav.scrolled{background:rgba(3,3,3,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Playfair Display',serif;font-size:22px;letter-spacing:-.02em;color:var(--fg)}
+.logo sup{font-family:'Space Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.1em;vertical-align:super}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--green);transition:width .3s}
+.nav-links a:hover{color:var(--fg)}
+.nav-links a:hover::after{width:100%}
+.nav-counter{font-size:9px;color:var(--green);letter-spacing:.1em}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 48px 80px;position:relative;z-index:1;overflow:hidden}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;padding:7px 16px;border:1px solid var(--border);border-radius:100px;margin-bottom:36px;width:fit-content}
+.badge-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.badge-text{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.hero-line{overflow:hidden;margin-bottom:4px}
+.hero-word{font-family:'Playfair Display',serif;font-size:clamp(60px,10vw,136px);font-weight:700;line-height:.9;letter-spacing:-.04em;color:var(--fg);display:block;transform:translateY(110%);animation:slideUp .9s cubic-bezier(.16,1,.3,1) forwards}
+.hero-word.italic{font-style:italic;color:transparent;-webkit-text-stroke:1.5px rgba(242,238,216,.25)}
+.hero-word.w2{animation-delay:.22s}
+.hero-word.w3{animation-delay:.34s}
+@keyframes slideUp{to{transform:translateY(0)}}
+.hero-sub{display:flex;justify-content:space-between;align-items:flex-end;margin-top:48px;flex-wrap:wrap;gap:24px}
+.hero-desc{max-width:380px;font-size:12px;line-height:1.95;color:var(--muted)}
+.hero-socials{display:flex;flex-direction:column;gap:10px;text-align:right}
+.hero-socials a{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .3s}
+.hero-socials a:hover{color:var(--green)}
+.scroll-indicator{margin-top:56px;display:flex;align-items:center;gap:14px}
+.scroll-indicator span{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--dim)}
+.scroll-bar{width:48px;height:1px;background:var(--dim);position:relative;overflow:hidden}
+.scroll-bar::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--green);animation:scrollbar 2.5s ease-in-out infinite}
+@keyframes scrollbar{0%{left:-100%}100%{left:100%}}
+.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0;overflow:hidden;position:relative;z-index:1;background:var(--bg)}
+.marquee-track{display:flex;gap:0;white-space:nowrap;animation:marquee 18s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.marquee-item{font-family:'Playfair Display',serif;font-size:28px;font-style:italic;color:var(--dim);padding:0 32px;flex-shrink:0}
+.marquee-item.accent{color:var(--green)}
+.marquee-sep{color:var(--border);font-size:20px;line-height:1.5}
+.work{padding:100px 48px;position:relative;z-index:1}
+.section-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:64px;flex-wrap:wrap;gap:16px}
+.section-tag{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--green)}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(40px,5vw,64px);font-weight:700;line-height:1;letter-spacing:-.03em;color:var(--fg);margin-top:8px}
+.section-count{font-size:9px;letter-spacing:.12em;color:var(--dim)}
+.projects-list{display:flex;flex-direction:column;gap:2px}
+.proj{display:grid;grid-template-columns:72px 1fr 340px;align-items:center;gap:0;border:1px solid var(--border);padding:28px 32px;transition:background .3s,border-color .4s;cursor:pointer;text-decoration:none;color:inherit;position:relative;overflow:hidden}
+.proj::before{content:'';position:absolute;left:0;top:0;width:3px;height:0;background:var(--green);transition:height .4s cubic-bezier(.16,1,.3,1)}
+.proj:hover{background:rgba(184,255,87,.03);border-color:rgba(184,255,87,.22)}
+.proj:hover::before{height:100%}
+.proj-num{font-size:11px;color:var(--dim);letter-spacing:.1em}
+.proj-info{padding:0 32px}
+.proj-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--fg);margin-bottom:8px;line-height:1.1}
+.proj-desc{font-size:11px;line-height:1.8;color:var(--muted);max-width:500px}
+.proj-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ptag{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);border:1px solid var(--border);padding:3px 9px;border-radius:2px}
+.proj-visual{height:120px;border-radius:4px;overflow:hidden;position:relative}
+.proj-visual canvas{width:100%;height:100%;display:block}
+.proj-arrow{position:absolute;top:28px;right:32px;font-size:18px;color:var(--dim);transition:color .3s,transform .3s}
+.proj:hover .proj-arrow{color:var(--green);transform:translate(3px,-3px)}
+.terminal{margin:0 48px 80px;border:1px solid var(--border);border-radius:8px;overflow:hidden;position:relative;z-index:1}
+.term-bar{background:#111;padding:12px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-dot.r{background:#ff5f57}.term-dot.y{background:#febc2e}.term-dot.g{background:#28c840}
+.term-title{font-size:10px;color:var(--dim);letter-spacing:.1em;margin:0 auto}
+.term-body{background:#080808;padding:28px 32px;font-size:12px;line-height:2;color:rgba(184,255,87,.7)}
+.term-line{display:block}
+.term-prompt{color:var(--green);margin-right:10px}
+.term-cmd{color:var(--fg)}
+.term-out{color:var(--muted);padding-left:20px}
+.term-cursor{display:inline-block;width:8px;height:14px;background:var(--green);animation:blink 1s infinite;vertical-align:middle}
+.skills{padding:100px 48px;position:relative;z-index:1;border-top:1px solid var(--border)}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.skill-card{padding:36px 32px;border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color .3s}
+.skill-card::after{content:'';position:absolute;top:0;right:0;width:0;height:1px;background:var(--green);transition:width .4s}
+.skill-card:hover{border-color:rgba(184,255,87,.2)}
+.skill-card:hover::after{width:100%}
+.skill-num{font-size:9px;letter-spacing:.15em;color:var(--green);margin-bottom:20px}
+.skill-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--fg);margin-bottom:14px}
+.skill-pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{font-size:9px;letter-spacing:.08em;padding:5px 12px;border-radius:100px;background:var(--dim);color:var(--muted);transition:background .3s,color .3s}
+.skill-card:hover .pill{background:rgba(184,255,87,.08);color:var(--fg)}
+.about{padding:100px 48px;position:relative;z-index:1;border-top:1px solid var(--border)}
+.about-layout{display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.about-big-text{font-family:'Playfair Display',serif;font-size:clamp(40px,5.5vw,72px);font-weight:700;line-height:1.02;letter-spacing:-.03em;color:var(--fg);margin-bottom:36px}
+.about-big-text em{font-style:italic;color:var(--green)}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.stat{padding:24px 20px;border:1px solid var(--border);text-align:center;transition:border-color .3s}
+.stat:hover{border-color:rgba(184,255,87,.25)}
+.stat-n{font-family:'Playfair Display',serif;font-size:42px;font-weight:700;color:var(--green);line-height:1}
+.stat-l{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.about-right p{font-size:12px;line-height:2;color:var(--muted);margin-bottom:20px}
+.about-right strong{color:var(--fg);font-weight:700}
+.cta-row{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;background:var(--green);color:#030303;font-size:9px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;text-decoration:none;border-radius:2px;transition:all .3s}
+.btn-primary:hover{background:#cbff7a;transform:translateY(-2px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border:1px solid var(--border);color:var(--muted);font-size:9px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s}
+.btn-ghost:hover{border-color:rgba(184,255,87,.3);color:var(--fg)}
+.platforms{display:flex;flex-wrap:wrap;border-top:1px solid var(--border);position:relative;z-index:1}
+.plink{flex:1 1 16%;min-width:120px;padding:26px 20px;border-right:1px solid var(--border);text-align:center;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:all .3s}
+.plink:hover{color:var(--green);background:rgba(184,255,87,.04)}
+footer{padding:52px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:28px;position:relative;z-index:1}
+.foot-logo{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--fg);line-height:1}
+.foot-logo span{color:var(--green)}
+.foot-sub{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+.foot-copy{font-size:9px;color:rgba(242,238,216,.12);margin-top:24px;letter-spacing:.06em}
+.foot-links{display:flex;flex-direction:column;gap:10px;text-align:right}
+.foot-links a{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s}
+.foot-links a:hover{color:var(--green)}
+@media(max-width:900px){
+  nav{padding:18px 24px}
+  .hero,.work,.skills,.about,.terminal{padding-left:24px;padding-right:24px}
+  .terminal{margin-left:24px;margin-right:24px}
+  .hero-word{font-size:52px}
+  .proj{grid-template-columns:40px 1fr;padding:20px}
+  .proj-visual{display:none}
+  .about-layout,.skills-grid{grid-template-columns:1fr}
+  footer{padding:36px 24px}
+}
+</style>
+</head>
+<body>
+<div id="dot"></div>
+<div id="ring"></div>
+<canvas id="bg"></canvas>
+
+<nav id="nav">
+  <div class="logo">Ankush<sup>DEV</sup></div>
+  <ul class="nav-links">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="mailto:akrk053@gmail.com">Hire me</a></li>
+  </ul>
+  <div class="nav-counter" id="clock">00:00:00</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><div class="badge-dot"></div><span class="badge-text">Available for opportunities · India</span></div>
+  <div class="hero-line"><span class="hero-word">Ankush</span></div>
+  <div class="hero-line"><span class="hero-word italic w2">creates</span></div>
+  <div class="hero-line"><span class="hero-word w3">impact.</span></div>
+  <div class="hero-sub">
+    <p class="hero-desc">Full-Stack Developer · AI/ML Builder · Competitive Coder.<br>Turning complex problems into elegant, working software.</p>
+    <div class="hero-socials">
+      <a href="https://github.com/BOT9315" target="_blank">GitHub ↗</a>
+      <a href="https://leetcode.com/u/Ankush123009/" target="_blank">LeetCode ↗</a>
+      <a href="https://www.hackerrank.com/profile/akrk053" target="_blank">HackerRank ↗</a>
+      <a href="https://www.instagram.com/iimankush__" target="_blank">Instagram ↗</a>
+      <a href="mailto:akrk053@gmail.com">akrk053@gmail.com ↗</a>
+    </div>
+  </div>
+  <div class="scroll-indicator"><span>Scroll to explore</span><div class="scroll-bar"></div></div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item accent">AI & Machine Learning</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">Healthcare Tech</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item accent">Full-Stack Dev</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">Competitive Coding</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item accent">Python · JavaScript</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">Open Source</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item accent">Problem Solving</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">AI & Machine Learning</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item accent">Healthcare Tech</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">Full-Stack Dev</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item accent">Competitive Coding</span><span class="marquee-sep"> · </span>
+    <span class="marquee-item">Python · JavaScript</span><span class="marquee-sep"> · </span>
+  </div>
+</div>
+
+<section id="work" class="work">
+  <div class="section-header">
+    <div><div class="section-tag">// Selected work</div><div class="section-title">Projects</div></div>
+    <div class="section-count">04 projects</div>
+  </div>
+  <div class="projects-list">
+    <a class="proj" href="https://github.com/BOT9315/AI-Driven-Healthcare-Anomaly-Detection-System" target="_blank">
+      <div class="proj-num">01</div>
+      <div class="proj-info">
+        <div class="proj-title">AI-Driven Healthcare Anomaly Detection</div>
+        <p class="proj-desc">ML system that detects anomalies in patient data in real time, flagging critical patterns to assist early diagnosis and medical intervention.</p>
+        <div class="proj-tags"><span class="ptag">Python</span><span class="ptag">Machine Learning</span><span class="ptag">Healthcare</span><span class="ptag">Anomaly Detection</span></div>
+      </div>
+      <div class="proj-visual"><canvas data-type="pulse" data-c="184,255,87"></canvas></div>
+      <span class="proj-arrow">↗</span>
+    </a>
+    <a class="proj" href="https://github.com/BOT9315/MedSafe-AI-Real-Time-Healthcare-Monitoring-System" target="_blank">
+      <div class="proj-num">02</div>
+      <div class="proj-info">
+        <div class="proj-title">MedSafe AI — Real-Time Monitoring</div>
+        <p class="proj-desc">Real-time patient monitoring platform powered by AI. Tracks vitals, triggers alerts for dangerous readings, multi-patient dashboard.</p>
+        <div class="proj-tags"><span class="ptag">Python</span><span class="ptag">Real-Time</span><span class="ptag">AI</span><span class="ptag">Dashboard</span></div>
+      </div>
+      <div class="proj-visual"><canvas data-type="grid" data-c="157,127,255"></canvas></div>
+      <span class="proj-arrow">↗</span>
+    </a>
+    <a class="proj" href="https://github.com/BOT9315/Text-to-handwriting-master" target="_blank">
+      <div class="proj-num">03</div>
+      <div class="proj-info">
+        <div class="proj-title">Text to Handwriting</div>
+        <p class="proj-desc">Creative web tool converting typed text into realistic handwritten output. Supports custom fonts, ink colors, page styles, and PDF export.</p>
+        <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">Canvas API</span><span class="ptag">PDF Export</span><span class="ptag">Creative</span></div>
+      </div>
+      <div class="proj-visual"><canvas data-type="wave" data-c="255,107,157"></canvas></div>
+      <span class="proj-arrow">↗</span>
+    </a>
+    <a class="proj" href="https://github.com/BOT9315/Flappy-Bird-Game" target="_blank">
+      <div class="proj-num">04</div>
+      <div class="proj-info">
+        <div class="proj-title">Flappy Bird Game</div>
+        <p class="proj-desc">Fully playable browser-based Flappy Bird clone. Smooth physics, score tracking, collision detection, and responsive controls — pure vanilla JS.</p>
+        <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">HTML5 Canvas</span><span class="ptag">Game Dev</span><span class="ptag">Physics</span></div>
+      </div>
+      <div class="proj-visual"><canvas data-type="flappy" data-c="251,191,36"></canvas></div>
+      <span class="proj-arrow">↗</span>
+    </a>
+  </div>
+</section>
+
+<div class="terminal">
+  <div class="term-bar">
+    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+    <div class="term-title">ankush@portfolio ~ </div>
+  </div>
+  <div class="term-body">
+    <span class="term-line"><span class="term-prompt">➜</span><span class="term-cmd">whoami</span></span>
+    <span class="term-line term-out">Ankush — Developer, AI Builder, Problem Solver</span>
+    <span class="term-line"><span class="term-prompt">➜</span><span class="term-cmd">cat skills.txt</span></span>
+    <span class="term-line term-out">Languages: C, C++, Python, JavaScript, Java</span>
+    <span class="term-line term-out">Web: React, Node.js, REST APIs, HTML, CSS</span>
+    <span class="term-line term-out">AI/ML: Scikit-learn, Pandas, NumPy, Anomaly Detection</span>
+    <span class="term-line term-out">DB: MongoDB, MySQL, Firebase</span>
+    <span class="term-line"><span class="term-prompt">➜</span><span class="term-cmd">cat contact.txt</span></span>
+    <span class="term-line term-out">Email: akrk053@gmail.com</span>
+    <span class="term-line term-out">GitHub: github.com/BOT9315</span>
+    <span class="term-line"><span class="term-prompt">➜</span><span class="term-cmd">echo "Open to opportunities"</span></span>
+    <span class="term-line term-out">Open to opportunities ✓</span>
+    <span class="term-line"><span class="term-prompt">➜</span><span class="term-cursor"></span></span>
+  </div>
+</div>
+
+<section id="skills" class="skills">
+  <div class="section-header"><div><div class="section-tag">// Expertise</div><div class="section-title">Skills</div></div></div>
+  <div class="skills-grid">
+    <div class="skill-card"><div class="skill-num">01</div><div class="skill-title">Languages</div><div class="skill-pills"><span class="pill">C</span><span class="pill">C++</span><span class="pill">Python</span><span class="pill">JavaScript</span><span class="pill">Java</span></div></div>
+    <div class="skill-card"><div class="skill-num">02</div><div class="skill-title">Web Dev</div><div class="skill-pills"><span class="pill">React</span><span class="pill">Node.js</span><span class="pill">HTML</span><span class="pill">CSS</span><span class="pill">REST APIs</span></div></div>
+    <div class="skill-card"><div class="skill-num">03</div><div class="skill-title">AI / ML</div><div class="skill-pills"><span class="pill">Scikit-learn</span><span class="pill">Pandas</span><span class="pill">NumPy</span><span class="pill">Anomaly Detection</span></div></div>
+    <div class="skill-card"><div class="skill-num">04</div><div class="skill-title">Databases</div><div class="skill-pills"><span class="pill">MongoDB</span><span class="pill">MySQL</span><span class="pill">Firebase</span></div></div>
+    <div class="skill-card"><div class="skill-num">05</div><div class="skill-title">Tools</div><div class="skill-pills"><span class="pill">Git</span><span class="pill">GitHub</span><span class="pill">VS Code</span><span class="pill">Linux</span><span class="pill">Postman</span></div></div>
+    <div class="skill-card"><div class="skill-num">06</div><div class="skill-title">Competitive</div><div class="skill-pills"><span class="pill">DSA</span><span class="pill">LeetCode</span><span class="pill">HackerRank</span><span class="pill">OOP</span></div></div>
+  </div>
+</section>
+
+<section id="about" class="about">
+  <div class="about-layout">
+    <div>
+      <div class="section-tag">// About me</div>
+      <h2 class="about-big-text">Code is how<br>I think &amp;<br><em>create.</em></h2>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-n">4+</div><div class="stat-l">Projects shipped</div></div>
+        <div class="stat"><div class="stat-n">5+</div><div class="stat-l">Platforms active</div></div>
+        <div class="stat"><div class="stat-n">&#8734;</div><div class="stat-l">Problems solved</div></div>
+        <div class="stat"><div class="stat-n">1k+</div><div class="stat-l">Lines / day</div></div>
+      </div>
+    </div>
+    <div class="about-right">
+      <p>I'm <strong>Ankush</strong> — a developer from India with a deep passion for building software that solves real problems. My work spans AI-powered healthcare systems, creative web tools, and game development.</p>
+      <p>I thrive at the intersection of <strong>machine learning and full-stack development</strong> — building end-to-end systems that are both intelligent and functional. Every project is an opportunity to push my limits.</p>
+      <p>When I'm not coding, I'm grinding competitive programming on <strong>LeetCode</strong> and <strong>HackerRank</strong>, constantly sharpening my DSA skills and algorithmic thinking.</p>
+      <p style="font-size:10px;color:rgba(242,238,216,.2);letter-spacing:.06em">Based in India · Open to remote &amp; on-site opportunities</p>
+      <div class="cta-row">
+        <a class="btn-primary" href="mailto:akrk053@gmail.com">Hire me ↗</a>
+        <a class="btn-ghost" href="https://github.com/BOT9315" target="_blank">View GitHub →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="platforms">
+  <a class="plink" href="https://github.com/BOT9315" target="_blank">GitHub</a>
+  <a class="plink" href="https://www.linkedin.com/public-profile/settings?trk=d_flagship3_profile_self_view_public_profile" target="_blank">LinkedIn</a>
+  <a class="plink" href="https://www.instagram.com/iimankush__" target="_blank">Instagram</a>
+  <a class="plink" href="https://leetcode.com/u/Ankush123009/" target="_blank">LeetCode</a>
+  <a class="plink" href="https://www.hackerrank.com/profile/akrk053" target="_blank">HackerRank</a>
+  <a class="plink" href="mailto:akrk053@gmail.com">Email me</a>
+</div>
+
+<footer>
+  <div>
+    <div class="foot-logo">Ankush<span>.</span></div>
+    <div class="foot-sub">Developer · Builder · Problem Solver</div>
+    <div class="foot-copy">© 2024 Ankush. Crafted with passion. All rights reserved.</div>
+  </div>
+  <div class="foot-links">
+    <a href="https://github.com/BOT9315" target="_blank">GitHub</a>
+    <a href="https://leetcode.com/u/Ankush123009/" target="_blank">LeetCode</a>
+    <a href="https://www.hackerrank.com/profile/akrk053" target="_blank">HackerRank</a>
+    <a href="https://www.instagram.com/iimankush__" target="_blank">Instagram</a>
+    <a href="mailto:akrk053@gmail.com">akrk053@gmail.com</a>
+  </div>
+</footer>
+
+<script>
+const dot=document.getElementById('dot'),ring=document.getElementById('ring');
+let mx=300,my=300,rx=300,ry=300;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>dot.classList.add('big'));el.addEventListener('mouseleave',()=>dot.classList.remove('big'))});
+(function anim(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim)})();
+function updateClock(){const n=new Date();document.getElementById('clock').textContent=[n.getHours(),n.getMinutes(),n.getSeconds()].map(v=>String(v).padStart(2,'0')).join(':')}
+updateClock();setInterval(updateClock,1000);
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+const bgC=document.getElementById('bg');const bc=bgC.getContext('2d');
+function rsz(){bgC.width=innerWidth;bgC.height=innerHeight}rsz();window.addEventListener('resize',rsz);
+const pts=[];for(let i=0;i<60;i++)pts.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.1+.2,a:Math.random()*.2+.04});
+(function dbg(){bc.clearRect(0,0,bgC.width,bgC.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=bgC.width;if(p.x>bgC.width)p.x=0;if(p.y<0)p.y=bgC.height;if(p.y>bgC.height)p.y=0;bc.beginPath();bc.arc(p.x,p.y,p.r,0,Math.PI*2);bc.fillStyle=`rgba(184,255,87,${p.a})`;bc.fill()});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){bc.beginPath();bc.moveTo(pts[i].x,pts[i].y);bc.lineTo(pts[j].x,pts[j].y);bc.strokeStyle=`rgba(184,255,87,${.05*(1-d/110)})`;bc.lineWidth=.4;bc.stroke()}}requestAnimationFrame(dbg)})();
+setTimeout(()=>{
+  document.querySelectorAll('.proj-visual canvas').forEach(cv=>{
+    cv.width=cv.parentElement.offsetWidth||340;cv.height=cv.parentElement.offsetHeight||120;
+    const ctx=cv.getContext('2d'),type=cv.dataset.type,rgb=cv.dataset.c||'184,255,87';let t=0;
+    (function draw(){
+      const w=cv.width,h=cv.height;ctx.fillStyle='#080808';ctx.fillRect(0,0,w,h);
+      if(type==='pulse'){for(let i=0;i<4;i++){ctx.beginPath();const ph=t*.022+i*.5;ctx.moveTo(0,h/2);for(let x=0;x<=w;x+=2){const seg=(x/w*5+ph)%5;let y=h/2;if(seg>0.7&&seg<0.9)y=h/2-h*.4;else if(seg>0.9&&seg<1.1)y=h/2+h*.12;else if(seg>1.1&&seg<1.4)y=h/2-h*.55;else if(seg>1.4&&seg<1.7)y=h/2+h*.18;else y=h/2+Math.sin(x*.018+ph)*3;ctx.lineTo(x,y)}ctx.strokeStyle=`rgba(${rgb},${.5-i*.1})`;ctx.lineWidth=1.2-i*.2;ctx.stroke()}}
+      else if(type==='grid'){const cols=20,rows=6,cw=w/cols,ch=h/rows;for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const v=Math.sin(t*.02+c*.5+r*.5)*.5+.5;ctx.fillStyle=`rgba(${rgb},${v*.25})`;ctx.fillRect(c*cw+1,r*ch+1,cw-2,ch-2)}}
+      else if(type==='wave'){for(let i=0;i<5;i++){ctx.beginPath();const yb=h*(.2+i*.16);ctx.moveTo(0,yb);for(let x=0;x<=w;x+=3){ctx.lineTo(x,yb+Math.sin(x*.035+t*.025+i*.8)*5)}ctx.strokeStyle=`rgba(${rgb},${.35-i*.05})`;ctx.lineWidth=1;ctx.stroke()}}
+      else{const px=(t*1.8)%(w+60)-30,by=h*.5+Math.sin(t*.1)*h*.25;ctx.fillStyle=`rgba(${rgb},.18)`;ctx.fillRect(px,0,22,h*.35);ctx.fillRect(px,h*.55,22,h*.45);const g=ctx.createRadialGradient(w*.2,by,0,w*.2,by,18);g.addColorStop(0,`rgba(${rgb},.9)`);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(w*.2,by,22,0,Math.PI*2);ctx.fill();ctx.fillStyle=`rgba(${rgb},.3)`;ctx.fillRect(0,h*.88,w,2)}
+      t++;requestAnimationFrame(draw);
+    })();
+  });
+},100);
+</script>
+</body>
+</html>
